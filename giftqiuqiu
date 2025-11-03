@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>给秋秋的定制神秘礼物 🎁</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --popup-life: 2200ms;   /* 每个弹窗存在多久 */
+    }
+    body{
+      margin:0;
+      height:100vh;
+      background:#f9f5ef;
+      font-family: "PingFang SC","Microsoft Yahei",system-ui,-apple-system,Segoe UI,Arial;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    h2{ margin:0 0 18px; color:#333; }
+    .btn{
+      padding:14px 24px; font-size:18px; color:#fff; background:#ff9bb3;
+      border:0; border-radius:12px; cursor:pointer; box-shadow:0 6px 20px rgba(255,155,179,.35);
+      transition:transform .1s ease,filter .2s ease;
+    }
+    .btn:active{ transform:scale(.98); filter:brightness(.95); }
+    /* 弹窗卡片样式 */
+    .popup{
+      position:fixed;
+      max-width:min(80vw, 420px);
+      background:#fff;
+      border-radius:16px;
+      padding:14px 18px;
+      font-size:16px;
+      box-shadow:0 10px 28px rgba(0,0,0,.15);
+      animation: popIn .28s ease-out, fadeOut var(--popup-life) linear forwards;
+      pointer-events:none;   /* 让它不挡点击 */
+      white-space:nowrap;
+    }
+    /* 进场小弹一下 */
+    @keyframes popIn{
+      from{ transform:translate(-50%,-50%) scale(.7); opacity:0; }
+      to  { transform:translate(-50%,-50%) scale(1);  opacity:1; }
+    }
+    /* 生命周期结束前 20% 开始淡出并上浮一点 */
+    @keyframes fadeOut{
+      0%,80% { opacity:1; }
+      100%   { opacity:0; transform:translate(-50%,-58%) scale(.98); }
+    }
+    /* 不同柔色背景（随机挑） */
+    .c1{ background:#fff7f8; }
+    .c2{ background:#f5fbff; }
+    .c3{ background:#f6fff6; }
+    .c4{ background:#fffaf2; }
+    .c5{ background:#f7f4ff; }
+    .tag{
+      display:inline-block; margin-right:6px; padding:2px 8px; border-radius:999px;
+      font-size:12px; background:rgba(0,0,0,.06);
+    }
+  </style>
+</head>
+<body>
+  <h2>💌给乖乖的小惊喜</h2>
+  <button class="btn" id="fire">点我领取 🎁</button>
+
+  <script>
+    // ① 想说的话（可自由增删）
+    const messages = [
+      "要相信自己哦 💪",
+      "每天都要元气满满 ✨",
+      "天冷了，多穿衣服 🧣",
+      "好好爱自己 ❤️",
+      "我想你了 🥰",
+      "金榜题名 🏆",
+      "保持好心情 🌈",
+      "愿你一切顺利 🍀",
+      "努力的你最可爱 💖",
+      "今天也要笑一笑 😄",
+      "早点休息不熬夜 ⏰",
+      "多喝热水也要运动 🏃‍♀️",
+      "祝你被温柔以待 🌟",
+      "一切都会变好哒 🌻",
+      "记得吃早餐呀 🥐",
+      "秋秋，阳光灿烂每一天～",
+"妹妹，笑容要常在～",
+"乖乖，快乐多一点～",
+"好好吃饭，胃才开心～",
+"早点睡觉，梦才香甜～",
+"秋秋，今天超有魅力～",
+"妹妹，心情要亮亮的～",
+"乖乖，元气无限加满～",
+"记得多喝水，皮肤好好～",
+"伸个懒腰，放松身心～",
+"秋秋，今天也要自信～",
+"妹妹，笑一笑好运到～",
+"乖乖，幸福天天绕～",
+"按时吃饭，别饿坏肚肚～",
+"早点休息，明天更闪亮～",
+"秋秋，今天真可爱～",
+"妹妹，好事要发生啦～",
+"乖乖，继续发光发热～",
+"吃饭认真点，能量满满～",
+"早点休息，精神百倍～",
+"秋秋，快乐不打烊～",
+"妹妹，元气来报道～",
+"乖乖，好梦要连连～",
+"喝口热水，暖暖心窝～",
+"伸伸胳膊，放松一下～",
+"秋秋，今天也要勇敢～",
+"妹妹，微笑最迷人～",
+"乖乖，幸福就要来～",
+"好好吃饭，别挑食哦～",
+"早点入睡，梦里甜甜～"
+    ];
+
+    // ② 发射参数（像游戏难度开关）
+    const BURST_COUNT = 300;     // 一次点击要冒出多少条
+    const INTERVAL_MS = 150;    // 两条之间隔多久（越小越密集）
+    const LIFE_MS = 2200;       // 每条卡片停留多久（和上面CSS --popup-life 对应）
+
+    // 工具：随机整数 [a,b]
+    const rnd = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
+
+    // 随机从数组拿一个
+    function pick(arr){ return arr[rnd(0,arr.length-1)]; }
+
+    // 生成一条弹窗
+    function makePopup(text){
+      const div = document.createElement('div');
+      div.className = 'popup ' + pick(['c1','c2','c3','c4','c5']);
+
+      // 随机给一点“提示标签”的感觉（可不要）
+      if(Math.random()<0.45){
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = pick(['提示','加油','小心情','今日签','暖心']);
+        div.appendChild(tag);
+      }
+      const span = document.createElement('span');
+      span.textContent = ' ' + text;
+      div.appendChild(span);
+
+      // 随机位置：避开屏幕四周 10% 的安全边距
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const x = rnd(12, 88);  // 百分比
+      const y = rnd(15, 85);
+
+      // 层级与微旋转
+      div.style.left = x + 'vw';
+      div.style.top  = y + 'vh';
+      div.style.transform = 'translate(-50%,-50%) rotate(' + rnd(-4,4) + 'deg)';
+      div.style.zIndex = String(1000 + Date.now()%100000);
+
+      // 动画生命周期同步到 CSS 变量
+      div.style.animationDuration = `.28s, ${LIFE_MS}ms`;
+
+      document.body.appendChild(div);
+
+      // 到时间移除
+      setTimeout(()=> div.remove(), LIFE_MS + 60);
+    }
+
+    // 连续发射一波
+    function burst(){
+      // 可选：按钮在发射期间禁用，防止误连点
+      const btn = document.getElementById('fire');
+      btn.disabled = true; btn.textContent = '发送中…';
+
+      let n = 0;
+      const timer = setInterval(()=>{
+        // 每次随机挑一句
+        makePopup(pick(messages));
+        n++;
+        if(n >= BURST_COUNT){
+          clearInterval(timer);
+          // 小延时恢复按钮
+          setTimeout(()=>{ btn.disabled=false; btn.textContent='点我领取 🎁'; }, 400);
+        }
+      }, INTERVAL_MS);
+    }
+
+    document.getElementById('fire').addEventListener('click', burst);
+
+    // 可选：页面刚打开时先自动来一小波
+    // setTimeout(burst, 800);
+  </script>
+</body>
+</html>
